@@ -1,0 +1,28 @@
+= Bluetooth Low Energy
+
+== Message blob
+
+A message consists of a header and a body.
+The message is sent in chunks of 18 byte.
+
+=== Header
+
+16 byte message header.
+
+01 01 05 00 00 63 00 00 00 00 00 01 6c ed 58 9b xx xx
+ I   | T   | L   | 0| 0| C         | H         | P  
+
+I - Message ID 0x0101
+T - seems like a kind of message type id 0x0500
+L - Length of message body
+C - Packet count (increased for every sent packet)
+H - CRC32 of message body (initialized with 0x5A6B7C8D)
+P - Padding bytes (don't care)
+
+==== T
+Seems like a kind of message type.
+0x4 and 0x5 seem to be allowed for the first byte.
+
+=== Body
+
+JSON string
