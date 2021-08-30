@@ -14,7 +14,7 @@ from .request import Request
 class RequestSetQsInfo(Request):
 
     def __init__(self, wifi_ssid, wifi_key='', wifi_key_type='wpa2_psk',
-                 web_user='edcrfv@edcujm.com', web_password='12345678'):
+                 web_user='edcrfv@edcujm.com', web_password='Passw0rd'):
         web_user = ''
         web_password = ''
         params = {
