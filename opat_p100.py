@@ -5,6 +5,7 @@ import sys
 
 import transport
 from bluez import Adapter
+#from http_p100 import HttpTransport
 
 TAPO_WRITE_CHAR_NAME = 'service000c/char0010'
 TAPO_READ_CHAR_NAME = 'service000c/char000d'
@@ -76,7 +77,8 @@ def wifi_set(args, adapter):
     device.connect()
     t = create_transport(device)
 
-    req = transport.RequestSetQsInfo(args.ssid, args.key)
+    req = transport.RequestSetQsInfo(wifi_ssid=args.ssid, wifi_key=args.key,
+                                     web_user=args.email, web_password=args.password)
     resp = t.request(req)
 
     if resp.has_error():
@@ -86,6 +88,10 @@ def wifi_set(args, adapter):
     print(resp.get_result())
 
     device.disconnect()
+
+
+def http_info(args, adapter):
+    t = HttpTransport(args.ipaddr, args.email, args.password)
 
 
 def print_usage(parser: argparse.ArgumentParser):
@@ -111,7 +117,15 @@ def main():
     parser_wifi_set.add_argument('baddr', type=str, help='BT address of device')
     parser_wifi_set.add_argument('ssid', type=str, help='SSID of the WiFi network')
     parser_wifi_set.add_argument('key', type=str, help='Key of the WiFi network (!SENT UNENCRYPTED!)')
+    parser_wifi_set.add_argument('email', type=str, default='edcrfv@edcujm.com', help='email')
+    parser_wifi_set.add_argument('password', type=str, default='Passw0rd', help='password')
     parser_wifi_set.set_defaults(func=wifi_set)
+
+    #parser_http_info = subparsers.add_parser('http_info', help='info for device over http')
+    #parser_http_info.add_argument('ipaddr', type=str, help='IP address of device')
+    #parser_http_info.add_argument('email', type=str, help='email')
+    #parser_http_info.add_argument('password', type=str, help='password')
+    #parser_http_info.set_defaults(func=http_info)
 
     if len(sys.argv) == 1:
         print_usage(parser)
