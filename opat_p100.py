@@ -5,7 +5,7 @@ import sys
 
 import transport
 from bluez import Adapter
-#from http_p100 import HttpTransport
+from http_p100 import HttpTransport, RequestSetDeviceInfo
 
 TAPO_WRITE_CHAR_NAME = 'service000c/char0010'
 TAPO_READ_CHAR_NAME = 'service000c/char000d'
@@ -90,8 +90,19 @@ def wifi_set(args, adapter):
     device.disconnect()
 
 
-def http_info(args, adapter):
+def switch(args, adapter):
     t = HttpTransport(args.ipaddr, args.email, args.password)
+
+    if args.onoff == 'on':
+        enable = True
+    elif args.onoff == 'off':
+        enable = False
+    else:
+        print(f'Argument onoff must be \'on\' or \'off\' but was \'{args.onoff}\'.')
+        return -1
+
+    req = RequestSetDeviceInfo(enable)
+    t.request(req)
 
 
 def print_usage(parser: argparse.ArgumentParser):
@@ -121,11 +132,12 @@ def main():
     parser_wifi_set.add_argument('password', type=str, default='Passw0rd', help='password')
     parser_wifi_set.set_defaults(func=wifi_set)
 
-    #parser_http_info = subparsers.add_parser('http_info', help='info for device over http')
-    #parser_http_info.add_argument('ipaddr', type=str, help='IP address of device')
-    #parser_http_info.add_argument('email', type=str, help='email')
-    #parser_http_info.add_argument('password', type=str, help='password')
-    #parser_http_info.set_defaults(func=http_info)
+    parser_switch = subparsers.add_parser('switch', help='Turn the plug on or off')
+    parser_switch.add_argument('ipaddr', type=str, help='IP address of device')
+    parser_switch.add_argument('email', type=str, help='email')
+    parser_switch.add_argument('password', type=str, help='password')
+    parser_switch.add_argument('onoff', type=str, help='Must be \'on\' or \'off\'.')
+    parser_switch.set_defaults(func=switch)
 
     if len(sys.argv) == 1:
         print_usage(parser)
